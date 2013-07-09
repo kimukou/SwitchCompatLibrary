@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -132,8 +133,9 @@ public class Switch extends CompoundButton
 
 		mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
 		Resources res = getResources();
-		mTextPaint.density = res.getDisplayMetrics().density;
-
+		if(Build.VERSION.SDK_INT >= 5){
+			mTextPaint= SwitchUtil.setTextPaintDensity(mTextPaint,res);
+		}
 		// TODO resolve error
 		// mTextPaint.setCompatibilityScaling(res.getCompatibilityInfo().applicationScale);
 
@@ -558,7 +560,14 @@ public class Switch extends CompoundButton
 	public boolean onTouchEvent(MotionEvent ev)
 	{
 		mVelocityTracker.addMovement(ev);
-		final int action = ev.getActionMasked();
+		//final int action = ev.getActionMasked();
+		final int action;
+		if(Build.VERSION.SDK_INT >= 8){
+			action = SwitchUtil.getAction(ev);
+		}
+		else{
+			action = ev.getAction();
+		}
 		switch (action)
 		{
 			case MotionEvent.ACTION_DOWN:
